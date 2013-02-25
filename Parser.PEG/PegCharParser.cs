@@ -63,5 +63,79 @@ namespace Parser.PEG
 			return false;
 		}
 		#endregion
+
+		#region Built-In
+		public bool LettersLowerCase()
+		{
+			return CharRange('a', 'z');
+		}
+		
+		public bool LettersUpperCase()
+		{
+			return CharRange('A', 'Z');
+		}
+		
+		public bool Letters()
+		{
+			return Seq(() =>
+				LettersLowerCase() || LettersUpperCase()
+			);
+		}
+		
+		public bool Digits()
+		{
+			return CharRange('0', '9');
+		}
+		
+		public bool Dec()
+		{
+			return Digits();
+		}
+		
+		public bool Oct()
+		{
+			return CharRange('0', '7');
+		}
+		
+		public bool Hex()
+		{
+			return Seq(() =>
+				   Dec()
+				|| CharRange('a', 'f')
+				|| CharRange('A', 'F')
+			);
+		}
+		
+		public bool S()
+		{
+			return Seq(() =>
+				Char(' ') || Char('\t') || Char('\n') || Char('\r')
+			);
+		}
+		
+		public bool WS()
+		{
+			return Seq(() =>
+				Char(' ') || Char('\t')
+			);
+		}
+		
+		public bool LF()
+		{
+			return Char('\n');
+		}
+		
+		public bool CR()
+		{
+			return Char('\r');
+		}
+		
+		public bool CRLF()
+		{
+			return Seq(() =>
+				CR() && LF()
+			);
+		}
+		#endregion
 	}
 }

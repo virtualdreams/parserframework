@@ -30,9 +30,8 @@ namespace Parser.PEG
 		public bool TreeNT(int ruleId, Matcher toMatch)
 		{
 			PegNode prevCur = Tree.Cur;
-			PegNode ruleNode = null;
-			
 			PegTree.AddPolicy prevPolicy = Tree.Policy;
+			PegNode ruleNode = null;
 			
 			int posBeg = _pos;
 			
@@ -69,6 +68,13 @@ namespace Parser.PEG
 			Tree.Cur = prevCur;
 			Tree.Policy = prevPolicy;
 		}
+		
+		private void ResetTree()
+		{
+			Tree.Root = null;
+			Tree.Cur = null;
+			Tree.Policy = PegTree.AddPolicy.AddAsChild;
+		}
 
 		private PegNode CreateNode(CreatorPhase phase, PegNode node, int id)
 		{
@@ -88,19 +94,18 @@ namespace Parser.PEG
 			{
 				Tree.Root = Tree.Cur = CreateNode(phase, Tree.Cur, id);
 			}
+			else if(Tree.Policy == PegTree.AddPolicy.AddAsChild)
+			{
+				Tree.Cur = Tree.Cur.Child = CreateNode(phase, Tree.Cur, id);
+			}
+			else
+			{
+				Tree.Cur = Tree.Cur.Next = CreateNode(phase, Tree.Cur.Parent, id);
+			}
+			Tree.Policy = newAddPolicy;
 		}
 			
 		#region Rules
-		public bool True()
-		{
-			return true;
-		}
-		
-		public bool False()
-		{
-			return false;
-		}
-		
 		/// <summary>
 		/// Match a sequence of rules, i.e. && or || or ()
 		/// </summary>
