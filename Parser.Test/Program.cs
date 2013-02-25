@@ -11,7 +11,7 @@ namespace Parser.Test
 	{
 		static void Main(string[] args)
 		{
-			string input = "conf = { key = \"value\"}";
+			string input = "key = \"value1\"\nkey = \"value2\"\n";
 			Test t = new Test(input);
 			
 			Console.WriteLine("Cursor: {0}", t.Pos);
@@ -21,14 +21,12 @@ namespace Parser.Test
 		}
 	}
 	
-	enum LuaTable
+	enum KeyValue: int
 	{
-		Ident = 1,
-		Key = 2,
-		String = 3,
-		Number = 4,
-		Bool = 5,
-		Array = 6
+		KeyValue = 1,
+		Pair = 2,
+		Key = 3,
+		Value = 4
 	}
 	
 	class Test: PegCharParser
@@ -41,75 +39,56 @@ namespace Parser.Test
 		
 		public bool Parse()
 		{
-			return TreeNT(0, () => 
-				Ident()
-			);
-		}
-		
-		public bool S()
-		{
-			return Star(() => OneOf(" \t\r\n"));
-		}
-		
-		public bool Ident()
-		{
-			return Seq(() =>
-				   S() 
-				&& Plus(() =>
-						CharRange('a', 'z') || CharRange('A', 'Z')
-					) 
-				&& S()
-				&& Char('=')
-				&& Object()
-			);
-		}
-		
-		public bool Object()
-		{
-			return Seq(() =>
-				   S()
-				&& Char('{')
-				&& S() 
-				&& (
-						Peek(() =>
-							Char('}') || Pair()
-						)
-					)
-				&& S()
+			return TreeNT((int)KeyValue.KeyValue, () => 
+				Star(() =>
+					Pair()
+				)
 			);
 		}
 		
 		public bool Pair()
 		{
-			return Seq(() =>
-				   S()
-				&& Plus(() =>
-						CharRange('a', 'z') || CharRange('A', 'Z')
-				   )
-				&& S()
-				&& Char('=')
-				&& S()
-				&& Char('"')
-				&& Star(() => Char('"'))
-				&& S()
+			bool r = TreeNT((int)KeyValue.Pair, () =>
+				Seq(() =>
+					   WS()
+					&& Key()
+					&& WS()
+					&& Char('=')
+					&& WS()
+					&& Value()
+					&& S()
+				)
 			);
+			return r;
 		}
 		
 		public bool Key()
 		{
-			
-			
-			return false;
+			bool r = TreeNT((int)KeyValue.Key, () =>
+				Plus(() =>
+					Letters()
+				)
+			);
+			return r;
 		}
 		
 		public bool Value()
 		{
-			return false;
+			bool r = Seq(() =>
+				Char('"') && StringContent() && Char('"')
+			);
+			return r;
 		}
 		
-		public bool Array()
+		public bool StringContent()
 		{
-			return false;
+			bool r = TreeNT((int)KeyValue.Value, () =>
+				//Star(() => 
+				//    Letters() || Digits()
+				//)
+				Until('"')
+			);
+			return r;
 		}
 	}
 }

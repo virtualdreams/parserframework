@@ -27,7 +27,7 @@ namespace Parser.PEG
 		#region Rules
 		public bool Char(char c0)
 		{
-			if(c0 == _src[_pos])
+			if(_pos < _len && c0 == _src[_pos])
 			{
 				++_pos;
 				return true;
@@ -37,7 +37,7 @@ namespace Parser.PEG
 		
 		public bool CharRange(char c0, char c1)
 		{
-			if(_src[_pos] >= c0 && _src[_pos] <= c1)
+			if(_pos < _len && _src[_pos] >= c0 && _src[_pos] <= c1)
 			{
 				++_pos;
 				return true;
@@ -56,6 +56,30 @@ namespace Parser.PEG
 				}
 			}
 			return false;
+		}
+		
+		/// <summary>
+		/// Consume the source until the char is found. Doesn't consume the char
+		/// </summary>
+		public bool Until(char c0)
+		{
+			for(;;)
+			{
+				int pos = _pos;
+				if(_pos < _len)
+				{
+					if(_src[_pos] == c0)
+					{
+						_pos = pos;
+						return true;
+					}
+					++_pos;
+				}
+				else
+				{
+					return false;
+				}
+			}
 		}
 		
 		public bool String(string s)
@@ -115,8 +139,10 @@ namespace Parser.PEG
 		
 		public bool WS()
 		{
-			return Seq(() =>
-				Char(' ') || Char('\t')
+			return Option(() =>
+				Seq(() =>
+					Char(' ') || Char('\t')
+				)
 			);
 		}
 		
