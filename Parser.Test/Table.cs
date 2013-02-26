@@ -157,6 +157,9 @@ namespace Parser.Test
 			return TreeNT((int)ConfigTable.Number, () =>
 				Seq(() =>
 					   S()
+					&& For(0, 1, () =>
+						OneOf("+-")
+					)
 					&& Star(() =>
 						Dec()
 					)
@@ -171,8 +174,14 @@ namespace Parser.Test
 		private bool RuleDecimal()
 		{
 			return TreeNT((int)ConfigTable.Decimal, () =>
-				Plus(() =>
-					Dec()
+				Seq(() =>
+					   S()
+					&& For(0, 1, () =>
+						OneOf("+-")
+					)
+					&& Plus(() =>
+						Dec()
+					)
 				)
 			);
 		}

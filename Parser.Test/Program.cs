@@ -25,6 +25,7 @@ namespace Parser.Test
 				input = "config = {key = 123, name = \"thomas\", options = {server = \"server\", _port099 = 9000, timeout = .098, username = \"thomas\"}, keyfile=\"thomas.pub\", enabled = true, privateKeyFile = \"\"   }  \n    \r   ";
 			}
 			
+			
 			Table t = new Table(input);
 			
 			Console.WriteLine("Parse result: {0}", t.Parse());

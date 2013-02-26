@@ -1,6 +1,12 @@
 config = {
 	username="justiz\t.kindler",
 	password="123456",
+	float1 = +.09,
+	float2 = -.08,
+	float3 = -9.87654,
+	float4 = +90.677,
+	int1 = -899,
+	int2 = +900,
 	server ={
 		listen ="0.0.0.0",
 		port = 9000
@@ -13,7 +19,7 @@ config = {
 			bubblebabble=266778788578,
 			enabled = true,
 			alt = {file="cert2.pem",key="25345532",bubblebabble=2786478264,enabled=false},
-			keys=["fu", "bar", false, true, "hello", 123]
+			keys =  ["fu", "bar", false, true, "hello", 123]
 		}
 	},
 	keyfile="thomas.ppk"
