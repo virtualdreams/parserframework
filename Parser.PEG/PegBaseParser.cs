@@ -27,6 +27,16 @@ namespace Parser.PEG
 			}
 		}
 		
+		public bool Fatal(string message)
+		{
+			return false;
+		}
+		
+		public bool Warning(string message)
+		{
+			return false;
+		}
+		
 		public bool TreeNT(int ruleId, Matcher toMatch)
 		{
 			PegNode prevCur = Tree.Cur;
@@ -207,6 +217,27 @@ namespace Parser.PEG
 					RestoreTree(prevCur, prevPolicy);
 					return false;
 				}
+			}
+			return true;
+		}
+		
+		public bool For(int min, int max, Matcher rule)
+		{
+			PegNode prevCur = Tree.Cur;
+			PegTree.AddPolicy prevPolicy = Tree.Policy;
+			int pos = _pos;
+			
+			int i = 0;
+			for(i = 0; i < max; ++i)
+			{
+				if(!rule())
+					break;
+			}
+			if(i < min)
+			{
+				_pos = pos;
+				RestoreTree(prevCur, prevPolicy);
+				return false;
 			}
 			return true;
 		}

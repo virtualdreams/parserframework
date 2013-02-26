@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 
 using Parser.PEG;
+using System.IO;
 
 namespace Parser.Test
 {
@@ -11,84 +12,53 @@ namespace Parser.Test
 	{
 		static void Main(string[] args)
 		{
-			string input = "key = \"value1\"\nkey = \"value2\"\n";
-			Test t = new Test(input);
+			string input = "";
+			if(args.Length > 0)
+			{
+				using(StreamReader sr = new StreamReader(args[0]))
+				{
+					input = sr.ReadToEnd();
+				}
+			}
+			else
+			{
+				input = "config = {key = 123, name = \"thomas\", options = {server = \"server\", _port099 = 9000, timeout = .098, username = \"thomas\"}, keyfile=\"thomas.pub\", enabled = true, privateKeyFile = \"\"   }  \n    \r   ";
+			}
 			
-			Console.WriteLine("Cursor: {0}", t.Pos);
+			Table t = new Table(input);
+			
 			Console.WriteLine("Parse result: {0}", t.Parse());
+			
+			Print(t.Tree, input);
 			
 			Console.ReadKey();
 		}
-	}
-	
-	enum KeyValue: int
-	{
-		KeyValue = 1,
-		Pair = 2,
-		Key = 3,
-		Value = 4
-	}
-	
-	class Test: PegCharParser
-	{
-		public Test(string source)
-			:base(source)
-		{
 		
+		static void Print(PegTree tree, string source)
+		{
+			if(tree.Root != null)
+			{
+				int level = 0;
+				PrintNode(tree.Root, level, source);
+			}
 		}
 		
-		public bool Parse()
+		static void PrintNode(PegNode node, int level, string source)
 		{
-			return TreeNT((int)KeyValue.KeyValue, () => 
-				Star(() =>
-					Pair()
-				)
-			);
-		}
-		
-		public bool Pair()
-		{
-			bool r = TreeNT((int)KeyValue.Pair, () =>
-				Seq(() =>
-					   WS()
-					&& Key()
-					&& WS()
-					&& Char('=')
-					&& WS()
-					&& Value()
-					&& S()
-				)
-			);
-			return r;
-		}
-		
-		public bool Key()
-		{
-			bool r = TreeNT((int)KeyValue.Key, () =>
-				Plus(() =>
-					Letters()
-				)
-			);
-			return r;
-		}
-		
-		public bool Value()
-		{
-			bool r = Seq(() =>
-				Char('"') && StringContent() && Char('"')
-			);
-			return r;
-		}
-		
-		public bool StringContent()
-		{
-			bool r = TreeNT((int)KeyValue.Value, () =>
-				//Star(() => 
-				//    Letters() || Digits()
-				//)
-				Until('"')
-			);
-			return r;
+			string tab = "";
+			for(int i = 0; i < level; ++i)
+				tab += '\t';
+			
+			if(node.Id >= 6 && node.Id <= 9 || node.Id == 4)
+				Console.WriteLine("{0}{1} -> {2}", tab, node.Id, node.Match.GetString(source));
+			else
+				Console.WriteLine("{0}{1}", tab, node.Id);
+			
+			if(node.Child != null)
+				PrintNode(node.Child, level + 1, source);
+				
+			if(node.Next != null)
+				PrintNode(node.Next, level, source);
 		}
 	}
 }
