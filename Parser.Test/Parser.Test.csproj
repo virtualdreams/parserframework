@@ -50,9 +50,9 @@
     <Compile Include="Table.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Parser.PEG\Parser.PEG.csproj">
+    <ProjectReference Include="..\Parser.PEG\Parser.Base.csproj">
       <Project>{3746D2EA-2919-44F3-9632-EE2F8B2C0B96}</Project>
-      <Name>Parser.PEG</Name>
+      <Name>Parser.Base</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

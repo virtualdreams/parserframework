@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // Allgemeine Informationen über eine Assembly werden über die folgenden 
 // Attribute gesteuert. Ändern Sie diese Attributwerte, um die Informationen zu ändern,
 // die mit einer Assembly verknüpft sind.
-[assembly: AssemblyTitle("Parser.PEG")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Parser.Base")]
+[assembly: AssemblyDescription("Parsing expression grammar (PEG)")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Justiz Sachsen")]
-[assembly: AssemblyProduct("Parser.PEG")]
-[assembly: AssemblyCopyright("Copyright © Justiz Sachsen 2013")]
+[assembly: AssemblyCompany("stichelbiene.de")]
+[assembly: AssemblyProduct("Parser base framwork")]
+[assembly: AssemblyCopyright("Copyright © stichelbiene.de 2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

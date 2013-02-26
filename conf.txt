@@ -19,8 +19,8 @@ config = {
 			bubblebabble=266778788578,
 			enabled = true,
 			alt = {file="cert2.pem",key="25345532",bubblebabble=2786478264,enabled=false},
-			keys =  ["fu", "bar", false, true, "hello", 123],
-			values2 =[],
+			keys =  ["fu", "bar", false, true, "hello", 123, -.9, +.900,-89,+44],
+			values2=[],
 			values2 = [  true ]
 		}
 	},

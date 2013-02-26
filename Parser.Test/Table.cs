@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Parser.PEG;
+using Parser.Base;
 
 namespace Parser.Test
 {

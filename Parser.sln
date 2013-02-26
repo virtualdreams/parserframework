@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parser.PEG", "Parser.PEG\Parser.PEG.csproj", "{3746D2EA-2919-44F3-9632-EE2F8B2C0B96}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parser.Base", "Parser.Base\Parser.Base.csproj", "{3746D2EA-2919-44F3-9632-EE2F8B2C0B96}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parser.Test", "Parser.Test\Parser.Test.csproj", "{7E0D4BD5-2D79-491B-81BD-5477DE85E9E9}"
 EndProject

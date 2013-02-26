@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Parser.PEG
+namespace Parser.Base
 {
 	public class PegCharParser: PegBaseParser
 	{
