@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Parser.Base;
 
-namespace Parser.Test
+namespace Parser.ConfigTable
 {
 	enum ConfigTableEnum : int
 	{
@@ -37,13 +37,15 @@ namespace Parser.Test
 		
 		private bool RuleTable()
 		{
-			return Seq(() =>
-				   S()
-				&& RuleKey()
-				&& S()
-				&& Char('=')
-				&& S()
-				&& RuleObject()
+			return TreeNT((int)ConfigTableEnum.Pair, () => 
+				Seq(() =>
+					   S()
+					&& RuleKey()
+					&& S()
+					&& Char('=')
+					&& S()
+					&& RuleObject()
+				)
 			);
 		}
 		

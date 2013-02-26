@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+
 using Parser.Base;
 
-namespace Parser.Test
+namespace Parser.ConfigTable
 {
 	enum ConfigTable : int
 	{
@@ -37,13 +38,15 @@ namespace Parser.Test
 		
 		private bool RuleTable()
 		{
-			return Seq(() =>
-				   S()
-				&& RuleKey()
-				&& S()
-				&& Char('=')
-				&& S()
-				&& RuleObject()
+			return TreeNT((int)ConfigTable.Pair, () => 
+				Seq(() =>
+					   S()
+					&& RuleKey()
+					&& S()
+					&& Char('=')
+					&& S()
+					&& RuleObject()
+				)
 			);
 		}
 		
