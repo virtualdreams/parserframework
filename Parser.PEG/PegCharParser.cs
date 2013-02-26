@@ -82,8 +82,19 @@ namespace Parser.PEG
 			}
 		}
 		
+		[Obsolete("This feature is untestet. use with care!")]
 		public bool String(string s)
 		{
+			int strlen = s.Length;
+			
+			if(_pos < _len && _len - _pos > strlen)
+			{
+				if(_src.Substring(_pos, strlen).Equals(s))
+				{
+					_pos += strlen;
+					return true;
+				}
+			}
 			return false;
 		}
 		#endregion
@@ -130,21 +141,21 @@ namespace Parser.PEG
 			);
 		}
 		
-		public bool S()
-		{
-			return Seq(() =>
-				Char(' ') || Char('\t') || Char('\n') || Char('\r')
-			);
-		}
+		//public bool S()
+		//{
+		//    return Seq(() =>
+		//        Char(' ') || Char('\t') || Char('\n') || Char('\r')
+		//    );
+		//}
 		
-		public bool WS()
-		{
-			return Option(() =>
-				Seq(() =>
-					Char(' ') || Char('\t')
-				)
-			);
-		}
+		//public bool WS()
+		//{
+		//    return Option(() =>
+		//        Seq(() =>
+		//            Char(' ') || Char('\t')
+		//        )
+		//    );
+		//}
 		
 		public bool LF()
 		{
