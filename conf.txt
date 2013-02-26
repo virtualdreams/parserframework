@@ -1,11 +1,10 @@
 config = {
-	username = "justiz\t.kindler",
-	password = "123456",
-	server = {
-		listen = "0.0.0.0",
+	username="justiz\t.kindler",
+	password="123456",
+	server ={
+		listen ="0.0.0.0",
 		port = 9000
-	},
-	client = {
+	},client={
 		address =	"192.168.0.123",
 		port = 		9000,
 		cert= 		{
@@ -13,7 +12,8 @@ config = {
 			key="gfhgfkghsfdkl",
 			bubblebabble=266778788578,
 			enabled = true,
-			alt = {file="cert2.pem", key="25345532",bubblebabble=2786478264,enabled=false}
+			alt = {file="cert2.pem",key="25345532",bubblebabble=2786478264,enabled=false},
+			keys=["fu", "bar", false, true, "hello", 123]
 		}
 	},
 	keyfile="thomas.ppk"

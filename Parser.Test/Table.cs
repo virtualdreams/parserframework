@@ -9,14 +9,15 @@ namespace Parser.Test
 	enum ConfigTable : int
 	{
 		Table = 1,
-		Object = 2,
-		Pair = 3,
-		Key = 4,
-		Value = 5,
-		String = 6,
-		Number = 7,
-		Decimal = 8,
-		Bool = 9
+		Key = 2,
+		Flat = 3,
+		Object = 4,
+		Array = 5,
+		Pair = 6,
+		String = 7,
+		Number = 8,
+		Decimal = 9,
+		Bool = 10
 	}
 	
 	public class Table: PegCharParser
@@ -54,16 +55,38 @@ namespace Parser.Test
 					&& Char('{')
 					&& S()
 					&& RuleElement()
-					&& S()
 					&& Star(() =>
 						Seq(() =>
-							Char(',')
+							   S()
+							&& Char(',')
 							&& S()
 							&& RuleElement()
 						)
 					)
 					&& S()
 					&& Char('}')
+				)
+			);
+		}
+		
+		private bool RuleArray()
+		{
+			return TreeNT((int)ConfigTable.Array, () =>
+				Seq(() =>
+					   S()
+					&& Char('[')
+					&& S()
+					&& RuleFlat()
+					&& Star(() =>
+						Seq(() =>
+							   S()
+							&& Char(',')
+							&& S()
+							&& RuleFlat()
+						)
+					)
+					&& S()
+					&& Char(']')
 				)
 			);
 		}
@@ -91,15 +114,15 @@ namespace Parser.Test
 					&& Char('=')
 					&& S()
 					&& Star(() =>
-						RuleValue() || RuleObject()
+						RuleFlat() || RuleObject() || RuleArray()
 					)
 				)
 			);
 		}
 		
-		private bool RuleValue()
+		private bool RuleFlat()
 		{
-			return TreeNT((int)ConfigTable.Value, () =>
+			return TreeNT((int)ConfigTable.Flat, () =>
 				Seq(() =>
 					S()
 					&& Seq(() =>

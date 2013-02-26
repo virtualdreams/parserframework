@@ -49,7 +49,7 @@ namespace Parser.Test
 			for(int i = 0; i < level; ++i)
 				tab += '\t';
 			
-			if(node.Id >= 6 && node.Id <= 9 || node.Id == 4)
+			if(node.Id >= 7 && node.Id <= 10 || node.Id == 2)
 				Console.WriteLine("{0}{1} -> {2}", tab, node.Id, node.Match.GetString(source));
 			else
 				Console.WriteLine("{0}{1}", tab, node.Id);
