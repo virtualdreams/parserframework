@@ -76,13 +76,15 @@ namespace Parser.Test
 					   S()
 					&& Char('[')
 					&& S()
-					&& RuleFlat()
 					&& Star(() =>
-						Seq(() =>
-							   S()
-							&& Char(',')
-							&& S()
-							&& RuleFlat()
+						RuleFlat()
+						&& Star(() =>
+							Seq(() =>
+								   S()
+								&& Char(',')
+								&& S()
+								&& RuleFlat()
+							)
 						)
 					)
 					&& S()
