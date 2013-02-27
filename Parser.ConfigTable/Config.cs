@@ -37,34 +37,57 @@ namespace Parser.ConfigTable
 			return SearchTree(path);
 		}
 		
+		public string GetString(string path)
+		{
+			return (string)GetObject(path);
+		}
+		
+		public long GetLong(string path)
+		{
+			return (long)GetObject(path);
+		}
+		
+		public double GetDouble(string path)
+		{
+			return (double)GetObject(path);
+		}
+		
+		public bool GetBool(string path)
+		{
+			return (bool)GetObject(path);
+		}
+		
 		private object SearchTree(string path)
 		{
 			string[] seg = path.Split(new char[] {'.'}, StringSplitOptions.RemoveEmptyEntries);
 			
 			PegNode node = _tree.Root.Child; //<- Pair
 			
-			//foreach(string key in pathSegments)
 			for(int i = 0; i < seg.Count(); ++i)
 			{
 				node = FindKey(node, seg[i]); //returns Flat, Object, Array or null
 				
-				if(i < seg.Count() - 1)
+				if(i < seg.Count() - 1) //if there are more segments available search for more objects or break
 				{
 					if(node != null && (ConfigTableEnum)node.Id == ConfigTableEnum.Object)
 					{
 						node = node.Child;
+					}
+					else
+					{
+						break;
 					}
 				}
 				else
 				{
 					if(node != null && (ConfigTableEnum)node.Id == ConfigTableEnum.Object)
 					{
-						return "<<object>>";
+						return GetObjectValue(node.Child);
 					}
 					
 					if (node != null && (ConfigTableEnum)node.Id == ConfigTableEnum.Array)
 					{
-						return GetArray(node.Child);
+						return GetArrayValue(node.Child);
 					}
 
 					if (node != null && (ConfigTableEnum)node.Id == ConfigTableEnum.Flat)
@@ -96,7 +119,20 @@ namespace Parser.ConfigTable
 			return null;
 		}
 		
-		private object GetArray(PegNode node)
+		private object GetObjectValue(PegNode node)
+		{
+			PegNode n = node;
+			List<string> keys = new List<string>();
+			
+			while(n != null && n.Child != null)
+			{
+				keys.Add(n.Child.Match.GetString(_source));
+				n = n.Next;
+			}
+			return keys;
+		}
+		
+		private object GetArrayValue(PegNode node)
 		{
 			PegNode n = node;
 			List<object> objs = new List<object>();
@@ -145,7 +181,7 @@ namespace Parser.ConfigTable
 			{
 				string tmp = node.Match.GetString(_source);
 				double value = 0;
-				//return Double.Parse(tmp, System.Globalization.NumberStyles.AllowDecimalPoint);
+				
 				if (Double.TryParse(tmp, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out value))
 				{
 					return value;

@@ -19,44 +19,60 @@ namespace Parser.ConfigTable
 				cfg.Load(args[0]);
 
 				string[] keys = new string[] { 
-					"config.username", 
+					//"config.username", 
 					"config.float1", 
-					"config.float2", 
-					"config.float3", 
-					"config.int1", 
-					"config.int2", 
-					"config.client.cert.enabled", 
+					//"config.float2", 
+					//"config.float3", 
+					//"config.int1", 
+					//"config.int2", 
+					//"config.client.cert.enabled", 
 					"config.array2", 
 					"config.server"
 				};
+				
+				cfg.GetBool("config.float1");
 
 				object obj = null;
 				foreach (string key in keys)
 				{
 					obj = cfg.GetObject(key);
 					if (obj != null)
-						Console.WriteLine(String.Format("{0}: {1} = {2}", obj.GetType().ToString(), key, obj));
+					{
+						Type type = obj.GetType();
+						if(type.IsArray)
+						{
+							foreach(object o in obj as Array)
+							{
+								Console.WriteLine(String.Format("{0}: {1} = {2}", o.GetType().ToString(), key, o));
+							}
+						}
+						else
+						{
+
+							Console.WriteLine(String.Format("{0}: {1} = {2}", obj.GetType().ToString(), key, obj));
+						}
+					}
 					else
 						Console.WriteLine(String.Format("Path not found '{0}'", key));
 				}
 			}
 
-			//using (StreamReader sr = new StreamReader(args[0]))
-			//{
-			//    string input = sr.ReadToEnd();
+			using (StreamReader sr = new StreamReader(args[0]))
+			{
+				string input = sr.ReadToEnd();
 
-			//    ConfigTableParser t = new ConfigTableParser(input);
+				ConfigTableParser t = new ConfigTableParser(input);
 
-			//    try
-			//    {
-			//        Console.WriteLine("Parse result: {0}", t.Parse());
-			//        Print(t.Tree, input);
-			//    }
-			//    catch (Exception ex)
-			//    {
-			//        Console.WriteLine(ex.Message);
-			//    }
-			//}
+				try
+				{
+					Console.WriteLine("Parse result: {0}", t.Parse());
+					Print(t.Tree, input);
+				}
+				catch (Exception ex)
+				{
+					Console.WriteLine(ex.Message);
+				}
+			}
 			
 			Console.ReadKey();
 		}
@@ -74,7 +90,7 @@ namespace Parser.ConfigTable
 		{
 			string tab = "";
 			for (int i = 0; i < level; ++i)
-				tab += '\t';
+				tab += ' ';
 
 			if (node.Id >= 7 && node.Id <= 10 || node.Id == 2)
 				Console.WriteLine("{0}{1} -> {2}", tab, (ConfigTable)node.Id, node.Match.GetString(source));
