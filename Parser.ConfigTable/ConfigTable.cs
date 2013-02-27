@@ -19,36 +19,37 @@ namespace Parser.ConfigTable
 		Decimal = 9,
 		Bool = 10
 	}
-	
-	class ConfigTableParser: PegCharParser
+
+	public class ConfigTableParser : PegCharParser
 	{
 		public ConfigTableParser(string source)
-			:base(source)
+			: base(source)
 		{
-		
+
 		}
-		
+
 		public bool Parse()
 		{
 			return TreeNT((int)ConfigTableEnum.Table, () =>
 				RuleTable()
 			);
 		}
-		
+
 		private bool RuleTable()
 		{
-			return TreeNT((int)ConfigTableEnum.Pair, () => 
+			return TreeNT((int)ConfigTableEnum.Pair, () =>
 				Seq(() =>
 					   S()
 					&& RuleKey()
 					&& S()
 					&& Char('=')
 					&& S()
-					&& RuleObject()
+					&& RuleObject2()
 				)
 			);
 		}
-		
+
+		[Obsolete("", true)]
 		private bool RuleObject()
 		{
 			return TreeNT((int)ConfigTableEnum.Object, () =>
@@ -70,7 +71,40 @@ namespace Parser.ConfigTable
 				)
 			);
 		}
-		
+
+		private bool RuleObject2()
+		{
+			return TreeNT((int)ConfigTableEnum.Object, () =>
+				Seq(() =>
+					   S()
+					&& Char('{')
+					&& S()
+					&& (Peek(() => Char('}')) || RulePair())
+					&& S()
+						   //&& Char('}')
+					&& (Char('}') || Fatal("'}' expected"))
+					&& S()
+				)
+			);
+		}
+
+		private bool RulePair()
+		{
+			return Seq(() =>
+				   RuleElement()
+				&& S()
+				&& Star(() =>
+					Seq(() =>
+						   Char(',')
+						&& S()
+							   //&& RuleElement()
+						&& (RuleElement() || Fatal("'element' expected"))
+					)
+				)
+			);
+		}
+
+		[Obsolete("", true)]
 		private bool RuleArray()
 		{
 			return TreeNT((int)ConfigTableEnum.Array, () =>
@@ -94,20 +128,52 @@ namespace Parser.ConfigTable
 				)
 			);
 		}
-		
+
+		private bool RuleArray2()
+		{
+			return TreeNT((int)ConfigTableEnum.Array, () =>
+				Seq(() =>
+					   S()
+					&& Char('[')
+					&& S()
+					&& (Peek(() => Char(']')) || RuleValues())
+					&& S()
+						   //&& Char(']')
+					&& (Char(']') || Fatal("']' expected"))
+					&& S()
+				)
+			);
+		}
+
+		private bool RuleValues()
+		{
+			return Seq(() =>
+				   RuleFlat()
+				&& S()
+				&& Star(() =>
+					Seq(() =>
+						   Char(',')
+						&& S()
+							   //&& RuleFlat()
+						&& (RuleFlat() || Fatal("'value' expected"))
+					)
+				)
+			);
+		}
+
 		private bool RuleKey()
 		{
 			return TreeNT((int)ConfigTableEnum.Key, () =>
 				Seq(() =>
 					   S()
-					&& ( Letters() || Char('_') )
+					&& (Letters() || Char('_'))
 					&& Star(() =>
 						Letters() || Char('_') || Dec()
 					)
 				)
 			);
 		}
-		
+
 		private bool RuleElement()
 		{
 			return TreeNT((int)ConfigTableEnum.Pair, () =>
@@ -118,12 +184,12 @@ namespace Parser.ConfigTable
 					&& Char('=')
 					&& S()
 					&& Star(() =>
-						RuleFlat() || RuleObject() || RuleArray()
+						RuleObject2() || RuleArray2() || RuleFlat()
 					)
 				)
 			);
 		}
-		
+
 		private bool RuleFlat()
 		{
 			return TreeNT((int)ConfigTableEnum.Flat, () =>
@@ -138,7 +204,7 @@ namespace Parser.ConfigTable
 				)
 			);
 		}
-		
+
 		private bool RuleString()
 		{
 			return Seq(() =>
@@ -148,14 +214,14 @@ namespace Parser.ConfigTable
 				&& Char('"')
 			);
 		}
-		
+
 		private bool RuleStringContent()
 		{
 			return TreeNT((int)ConfigTableEnum.String, () =>
 				Until('"')
 			);
 		}
-		
+
 		private bool RuleNumber()
 		{
 			return TreeNT((int)ConfigTableEnum.Number, () =>
@@ -174,7 +240,7 @@ namespace Parser.ConfigTable
 				)
 			);
 		}
-		
+
 		private bool RuleDecimal()
 		{
 			return TreeNT((int)ConfigTableEnum.Decimal, () =>
@@ -189,13 +255,13 @@ namespace Parser.ConfigTable
 				)
 			);
 		}
-		
+
 		private bool RuleBool()
 		{
 			return TreeNT((int)ConfigTableEnum.Bool, () =>
 				Seq(() =>
 					S()
-					&& 
+					&&
 					(
 						Seq(() =>
 							   Char('t')
@@ -215,7 +281,7 @@ namespace Parser.ConfigTable
 				)
 			);
 		}
-		
+
 		private bool S()
 		{
 			return Star(() =>

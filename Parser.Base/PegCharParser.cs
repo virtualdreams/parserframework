@@ -16,12 +16,38 @@ namespace Parser.Base
 			_len = source.Length;
 		}
 
-		public int Pos
+		private void GetLineNumber(int pos, out int ln, out int col)
 		{
-			get
+			string[] lines = _src.Split('\n');
+			int lpos = 0;
+			int lline = 0;
+			
+			foreach(string line in lines)
 			{
-				return _pos;
+				lpos += line.Length + 1;
+				lline++;
+				
+				if(lpos > pos)
+				{
+					ln = lline;
+					col = lpos - pos;
+					return;
+				}
 			}
+			ln = 0;
+			col = 0;
+		}
+
+		public bool Fatal(string message)
+		{
+			int pos = _pos;
+			
+			int ln = 0;
+			int col = 0;
+			
+			GetLineNumber(pos, out ln, out col);
+
+			throw new Exception(System.String.Format("{0},{1} - {2}", ln, col, message));
 		}
 		
 		#region Rules

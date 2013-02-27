@@ -27,11 +27,6 @@ namespace Parser.Base
 			}
 		}
 		
-		public bool Fatal(string message)
-		{
-			return false;
-		}
-		
 		public bool Warning(string message)
 		{
 			return false;

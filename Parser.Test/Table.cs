@@ -45,11 +45,12 @@ namespace Parser.ConfigTable
 					&& S()
 					&& Char('=')
 					&& S()
-					&& RuleObject()
+					&& RuleObject2()
 				)
 			);
 		}
 		
+		[Obsolete("", true)]
 		private bool RuleObject()
 		{
 			return TreeNT((int)ConfigTable.Object, () =>
@@ -72,6 +73,39 @@ namespace Parser.ConfigTable
 			);
 		}
 		
+		private bool RuleObject2()
+		{
+			return TreeNT((int)ConfigTable.Object, () =>
+				Seq(() =>
+					   S()
+					&& Char('{')
+					&& S()
+					&& ( Peek(() => Char('}')) || RulePair())
+					&& S()
+					//&& Char('}')
+					&& ( Char('}') || Fatal("'}' expected") )
+					&& S()
+				)
+			);
+		}
+		
+		private bool RulePair()
+		{
+			return Seq(() =>
+				   RuleElement()
+				&& S()
+				&& Star(() =>
+					Seq(() =>
+						   Char(',')
+						&& S()
+						//&& RuleElement()
+						&& ( RuleElement() || Fatal("'element' expected") )
+					)
+				)
+			);
+		}
+		
+		[Obsolete("", true)]
 		private bool RuleArray()
 		{
 			return TreeNT((int)ConfigTable.Array, () =>
@@ -92,6 +126,38 @@ namespace Parser.ConfigTable
 					)
 					&& S()
 					&& Char(']')
+				)
+			);
+		}
+		
+		private bool RuleArray2()
+		{
+			return TreeNT((int)ConfigTable.Array, () =>
+				Seq(() =>
+					   S()
+					&& Char('[')
+					&& S()
+					&& (Peek(() => Char(']')) || RuleValues())
+					&& S()
+					//&& Char(']')
+					&& (Char(']') || Fatal("']' expected"))
+					&& S()
+				)
+			);
+		}
+		
+		private bool RuleValues()
+		{
+			return Seq(() =>
+				   RuleFlat()
+				&& S()
+				&& Star(() =>
+					Seq(() =>
+						   Char(',')
+						&& S()
+						//&& RuleFlat()
+						&& (RuleFlat() || Fatal("'value' expected"))
+					)
 				)
 			);
 		}
@@ -119,7 +185,7 @@ namespace Parser.ConfigTable
 					&& Char('=')
 					&& S()
 					&& Star(() =>
-						RuleFlat() || RuleObject() || RuleArray()
+						RuleObject2() || RuleArray2() || RuleFlat()
 					)
 				)
 			);
@@ -223,5 +289,10 @@ namespace Parser.ConfigTable
 				OneOf(" \t\n\r")
 			);
 		}
+
+		//private bool Fatal(string message)
+		//{
+		//    throw new Exception(message);
+		//}
 	}
 }

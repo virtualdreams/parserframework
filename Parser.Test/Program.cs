@@ -25,11 +25,19 @@ namespace Parser.ConfigTable
 			{	
 			    string input = sr.ReadToEnd();
 				
-			    Table t = new Table(input);
+			    ConfigTableParser t = new ConfigTableParser(input);
+				
+				try
+				{
+					Console.WriteLine("Parse result: {0}", t.Parse());
+					Print(t.Tree, input);
+				}
+				catch(Exception ex)
+				{
+					Console.WriteLine(ex.Message);
+				}
 
-			    Console.WriteLine("Parse result: {0}", t.Parse());
-
-			    Print(t.Tree, input);
+			    
 			}
 			
 			Console.ReadKey();
