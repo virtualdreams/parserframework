@@ -6,10 +6,12 @@ config = {
 	float3 = -9.87654,
 	float4 = +90.677,
 	int1 = -899,
-	int2 = +900,
+	int2 = +9.00,
 	type={},
 	type2 = {  },
+	cur  = false,
 	array=[],
+	array2 = ["hello", "world", true, false],
 	server ={
 		listen ="0.0.0.0",
 		port = 9000
@@ -27,7 +29,15 @@ config = {
 			values2 = [  true ]
 		}
 	},
-	keyfile="thomas.ppk"
+	keyfile="thomas.ppk",
+	users = ["thomas", "frank"],
+	thomas = {
+		enabled = true
+	},
+	frank = {
+		enabled = false
+	}
+	
 }
 
 

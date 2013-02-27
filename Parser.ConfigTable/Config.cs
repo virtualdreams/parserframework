@@ -39,27 +39,39 @@ namespace Parser.ConfigTable
 		
 		private object SearchTree(string path)
 		{
-			string[] pathSegments = path.Split(new char[] {'.'}, StringSplitOptions.RemoveEmptyEntries);
+			string[] seg = path.Split(new char[] {'.'}, StringSplitOptions.RemoveEmptyEntries);
 			
 			PegNode node = _tree.Root.Child; //<- Pair
-			foreach(string key in pathSegments)
+			
+			//foreach(string key in pathSegments)
+			for(int i = 0; i < seg.Count(); ++i)
 			{
-				node = FindKey(node, key); //returns Flat, Object, Array or null
-
-				if(node != null && (ConfigTableEnum)node.Id == ConfigTableEnum.Flat)
+				node = FindKey(node, seg[i]); //returns Flat, Object, Array or null
+				
+				if(i < seg.Count() - 1)
 				{
-					return "<<value>>";
+					if(node != null && (ConfigTableEnum)node.Id == ConfigTableEnum.Object)
+					{
+						node = node.Child;
+					}
 				}
-
-				if(node != null && (ConfigTableEnum)node.Id == ConfigTableEnum.Object)
+				else
 				{
-					node = node.Child;
-				}
+					if(node != null && (ConfigTableEnum)node.Id == ConfigTableEnum.Object)
+					{
+						return "<<object>>";
+					}
+					
+					if (node != null && (ConfigTableEnum)node.Id == ConfigTableEnum.Array)
+					{
+						return GetArray(node.Child);
+					}
 
-				//if (node != null && (ConfigTableEnum)node.Id == ConfigTableEnum.Array)
-				//{
-				//    node = node.Child.Child;
-				//}
+					if (node != null && (ConfigTableEnum)node.Id == ConfigTableEnum.Flat)
+					{
+						return GetFlatValue(node.Child);
+					}
+				}
 			}
 			
 			return null;
@@ -67,6 +79,9 @@ namespace Parser.ConfigTable
 		
 		private PegNode FindKey(PegNode node, string key)
 		{
+			if(node == null)
+				return null;
+			
 			PegNode k = node.Child;
 			PegNode v = node.Child.Next;
 			
@@ -76,56 +91,73 @@ namespace Parser.ConfigTable
 			}
 
 			if (node.Next != null)
-				FindKey(node.Next, key);	
+				return FindKey(node.Next, key);	
 		
 			return null;
 		}
 		
-		//private string FindKey(PegNode node, string keyName)
-		//{
-		//    if((ConfigTableEnum)node.Id == ConfigTableEnum.Key)
-		//    {
-		//        if(keyName.Equals(node.Match.GetString(_source)))
-		//        {
-		//            if(node.Next != null)
-		//            {
-		//                PegNode value = node.Next;
-						
-		//                if((ConfigTableEnum)value.Id == ConfigTableEnum.Flat)
-		//                {
-		//                    if(value.Child != null)
-		//                    {
-		//                        switch((ConfigTableEnum)value.Child.Id)
-		//                        {
-		//                            case ConfigTableEnum.String:
-		//                                return value.Child.Match.GetString(_source);
-										
-		//                            case ConfigTableEnum.Decimal:
-		//                                return value.Child.Match.GetString(_source);
-										
-		//                            case ConfigTableEnum.Number:
-		//                                return value.Child.Match.GetString(_source);
-										
-		//                            case ConfigTableEnum.Bool:
-		//                                return value.Child.Match.GetString(_source);
-										
-		//                            default:
-		//                                return null;
-		//                        }
-		//                    }
-		//                }
-		//            }
-		//        }
-		//    }
+		private object GetArray(PegNode node)
+		{
+			PegNode n = node;
+			List<object> objs = new List<object>();
 			
-		//    if (node.Child != null)
-		//        FindKey(node.Child, keyName);
-
-		//    if (node.Next != null)
-		//        FindKey(node.Next, keyName);
+			while(n != null)
+			{
+				objs.Add(GetFlatValue(n.Child));
 				
-		//    return null;
-		//}
+				n = n.Next;
+			}
+			
+			return objs.ToArray();
+		}
+		
+		private object GetFlatValue(PegNode node)
+		{
+			if((ConfigTableEnum)node.Id == ConfigTableEnum.String) //string
+			{
+				return node.Match.GetString(_source);
+			}
+
+			if ((ConfigTableEnum)node.Id == ConfigTableEnum.Bool)
+			{
+				string tmp = node.Match.GetString(_source);
+				if(tmp.Equals("true"))
+					return true;
+				return false;
+			}
+
+			if ((ConfigTableEnum)node.Id == ConfigTableEnum.Decimal) //long
+			{
+				string tmp = node.Match.GetString(_source);
+				long value = 0;
+
+				if (Int64.TryParse(tmp, out value))
+				{
+					return value;
+				}
+				else
+				{
+					throw new Exception("Failed to parse long value.");
+				}
+			}
+
+			if ((ConfigTableEnum)node.Id == ConfigTableEnum.Number) //double
+			{
+				string tmp = node.Match.GetString(_source);
+				double value = 0;
+				//return Double.Parse(tmp, System.Globalization.NumberStyles.AllowDecimalPoint);
+				if (Double.TryParse(tmp, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out value))
+				{
+					return value;
+				}
+				else
+				{
+					throw new Exception("Failed to parse double value.");
+				}
+			}
+			
+			throw new Exception("No valid value type found.");
+		}
 		
 		private string LoadFile(string path)
 		{

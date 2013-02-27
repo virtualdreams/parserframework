@@ -81,7 +81,6 @@ namespace Parser.ConfigTable
 					&& S()
 					&& (Peek(() => Char('}')) || RulePair())
 					&& S()
-						   //&& Char('}')
 					&& (Char('}') || Fatal("'}' expected"))
 					&& S()
 				)
@@ -97,7 +96,6 @@ namespace Parser.ConfigTable
 					Seq(() =>
 						   Char(',')
 						&& S()
-							   //&& RuleElement()
 						&& (RuleElement() || Fatal("'element' expected"))
 					)
 				)
@@ -154,7 +152,6 @@ namespace Parser.ConfigTable
 					Seq(() =>
 						   Char(',')
 						&& S()
-							   //&& RuleFlat()
 						&& (RuleFlat() || Fatal("'value' expected"))
 					)
 				)
@@ -184,7 +181,7 @@ namespace Parser.ConfigTable
 					&& Char('=')
 					&& S()
 					&& Star(() =>
-						RuleObject2() || RuleArray2() || RuleFlat()
+						RuleObject2() || RuleArray2() || RuleFlat()// || Fatal("object, array or value expected")
 					)
 				)
 			);

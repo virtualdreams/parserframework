@@ -18,27 +18,45 @@ namespace Parser.ConfigTable
 				Config cfg = new Config();
 				cfg.Load(args[0]);
 
-				Console.WriteLine(cfg.GetObject("config.username"));
-			}
-			
-			using(StreamReader sr = new StreamReader(args[0]))
-			{	
-			    string input = sr.ReadToEnd();
-				
-			    ConfigTableParser t = new ConfigTableParser(input);
-				
-				try
-				{
-					Console.WriteLine("Parse result: {0}", t.Parse());
-					Print(t.Tree, input);
-				}
-				catch(Exception ex)
-				{
-					Console.WriteLine(ex.Message);
-				}
+				string[] keys = new string[] { 
+					"config.username", 
+					"config.float1", 
+					"config.float2", 
+					"config.float3", 
+					"config.int1", 
+					"config.int2", 
+					"config.client.cert.enabled", 
+					"config.array2", 
+					"config.server"
+				};
 
-			    
+				object obj = null;
+				foreach (string key in keys)
+				{
+					obj = cfg.GetObject(key);
+					if (obj != null)
+						Console.WriteLine(String.Format("{0}: {1} = {2}", obj.GetType().ToString(), key, obj));
+					else
+						Console.WriteLine(String.Format("Path not found '{0}'", key));
+				}
 			}
+
+			//using (StreamReader sr = new StreamReader(args[0]))
+			//{
+			//    string input = sr.ReadToEnd();
+
+			//    ConfigTableParser t = new ConfigTableParser(input);
+
+			//    try
+			//    {
+			//        Console.WriteLine("Parse result: {0}", t.Parse());
+			//        Print(t.Tree, input);
+			//    }
+			//    catch (Exception ex)
+			//    {
+			//        Console.WriteLine(ex.Message);
+			//    }
+			//}
 			
 			Console.ReadKey();
 		}
