@@ -9,6 +9,17 @@ namespace Parser.ConfigTable
 {
 	public class Config
 	{
+		public enum ConfigTypes
+		{
+			Object,
+			Array,
+			String,
+			Double,
+			Long,
+			Bool,
+			Unknown
+		}
+		
 		private string _source = "";
 		private PegTree _tree = null;
 	
@@ -28,7 +39,6 @@ namespace Parser.ConfigTable
 			{
 				throw new Exception("Parsing config file failed. Please review your config.");
 			}
-			
 			_tree = ctp.Tree;
 		}
 		
@@ -57,9 +67,35 @@ namespace Parser.ConfigTable
 			return (bool)GetObject(path);
 		}
 		
+		public object[] GetArray(string path)
+		{
+			return (object[])GetObject(path);
+		}
+		
+		public ConfigTypes GetObjectType(string path)
+		{
+			Type type = GetObject(path).GetType();
+			if(type == typeof(string))
+				return ConfigTypes.String;
+				
+			if(type == typeof(double))
+				return ConfigTypes.Double;
+				
+			if(type == typeof(long))
+				return ConfigTypes.Long;
+				
+			if(type.IsArray && type == typeof(string[]))
+				return ConfigTypes.Object;
+			
+			if(type.IsArray && type == typeof(object[]))
+				return ConfigTypes.Array;
+			
+			return ConfigTypes.Unknown;
+		}
+		
 		private object SearchTree(string path)
 		{
-			string[] seg = path.Split(new char[] {'.'}, StringSplitOptions.RemoveEmptyEntries);
+			string[] seg = path.Split(new char[] {'.', '/', '|'}, StringSplitOptions.RemoveEmptyEntries);
 			
 			PegNode node = _tree.Root.Child; //<- Pair
 			
@@ -78,7 +114,7 @@ namespace Parser.ConfigTable
 						break;
 					}
 				}
-				else
+				else //the last segment must be one of...
 				{
 					if(node != null && (ConfigTableEnum)node.Id == ConfigTableEnum.Object)
 					{
@@ -102,20 +138,31 @@ namespace Parser.ConfigTable
 		
 		private PegNode FindKey(PegNode node, string key)
 		{
-			if(node == null)
+			PegNode n = node;
+			while(n != null)
+			{
+				PegNode child = GetChild(n, key);
+				if(child != null)
+				{
+					return child;
+				}
+				n = n.Next;
+			}
+			return null;
+		}
+		
+		private PegNode GetChild(PegNode node, string key)
+		{
+			if (node == null)
 				return null;
-			
+
 			PegNode k = node.Child;
 			PegNode v = node.Child.Next;
-			
-			if(k.Match.GetString(_source).Equals(key))
+
+			if (k.Match.GetString(_source).Equals(key))
 			{
 				return v;
 			}
-
-			if (node.Next != null)
-				return FindKey(node.Next, key);	
-		
 			return null;
 		}
 		
@@ -129,7 +176,7 @@ namespace Parser.ConfigTable
 				keys.Add(n.Child.Match.GetString(_source));
 				n = n.Next;
 			}
-			return keys;
+			return keys.ToArray();
 		}
 		
 		private object GetArrayValue(PegNode node)

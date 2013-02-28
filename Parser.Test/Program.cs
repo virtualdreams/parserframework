@@ -19,18 +19,23 @@ namespace Parser.ConfigTable
 				cfg.Load(args[0]);
 
 				string[] keys = new string[] { 
-					//"config.username", 
+					"config",
+					"cfg.less",
+					"config.less",
+					"config.username.less",
+					"config.username", 
 					"config.float1", 
-					//"config.float2", 
-					//"config.float3", 
-					//"config.int1", 
-					//"config.int2", 
-					//"config.client.cert.enabled", 
+					"config.float2", 
+					"config.float3", 
+					"config.int1", 
+					"config.int2", 
+					"config.client.cert.enabled", 
 					"config.array2", 
 					"config.server"
 				};
 				
-				cfg.GetBool("config.float1");
+				Config.ConfigTypes t1 = cfg.GetObjectType("config/array");
+				Config.ConfigTypes t2 = cfg.GetObjectType("config/");
 
 				object obj = null;
 				foreach (string key in keys)
@@ -41,9 +46,17 @@ namespace Parser.ConfigTable
 						Type type = obj.GetType();
 						if(type.IsArray)
 						{
-							foreach(object o in obj as Array)
+							if(obj is string)
 							{
-								Console.WriteLine(String.Format("{0}: {1} = {2}", o.GetType().ToString(), key, o));
+								Console.WriteLine("keylist");
+							}
+							
+							if(obj is object)
+							{
+								foreach(object o in obj as Array)
+								{
+									Console.WriteLine(String.Format("{0}: {1} = {2}", o.GetType().ToString(), key, o));
+								}
 							}
 						}
 						else
