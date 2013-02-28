@@ -14,20 +14,13 @@ namespace ConfigTable.Check
 		{
 			bool tree = false;
 			List<string> request = new List<string>();
-			List<string> plain = new List<string>();
 			List<string> opts;
 			
 			OptionSet os = new OptionSet();
 			os
 				.Add("h|help|?", "Show this help.", option => ShowHelp(os))
-				.Add("tree", "Display the parse tree if can parsed.", option => tree = option != null)
-				.Add("p|plain=", "Request an object from file and return the plain value.", option => {
-					if(!plain.Contains(option))
-					{
-						plain.Add(option);
-					}
-				})
-				.Add("r|request=", "Request an object from file.", option => {
+				.Add("t|tree", "Display parse tree.", option => tree = option != null)
+				.Add("r|request=", "Request an object.", option => {
 					if(!request.Contains(option))
 					{
 						request.Add(option);
@@ -47,31 +40,30 @@ namespace ConfigTable.Check
 						
 						if(tree)
 						{
-							Console.WriteLine("Print tree for '{0}'", file);
+							Console.WriteLine("Print tree for '{0}':", file);
 							cfg.Print();
-						}
-
-						foreach (string path in plain)
-						{
-							object obj = cfg.GetObject(path);
-							Console.WriteLine(obj);
 						}
 						
 						foreach(string path in request)
 						{
 							object obj = cfg.GetObject(path);
-							if(cfg.GetObjectType(path) == Config.ConfigTypes.Object)
+							Config.ConfigTypes type = cfg.GetObjectType(path);
+							
+							if(type == Config.ConfigTypes.Object)
 							{
-								Console.WriteLine("request '{0}' = '{1}'", path, "<Object>");
+								foreach(string key in obj as Array)
+								{
+									Console.WriteLine("request '{0}'(object) = '{1}'", path, key);
+								}
 							}
-							else if(cfg.GetObjectType(path) == Config.ConfigTypes.Array)
+							else if(type == Config.ConfigTypes.Array)
 							{
 								foreach(object o in obj as Array)
 								{
-									Console.WriteLine("request '{0}' = '{1}'", path, o);
+									Console.WriteLine("request '{0}'(array) = '{1}'", path, o);
 								}
 							}
-							else if(cfg.GetObjectType(path) == Config.ConfigTypes.Null)
+							else if(type == Config.ConfigTypes.Null)
 							{
 								Console.WriteLine("request '{0}' = '{1}'", path, "<Not found>");
 							}
@@ -91,13 +83,16 @@ namespace ConfigTable.Check
 			{
 				ShowHelp(os);
 			}
-
+			
+			#if(DEBUG)
 			Console.ReadKey();
+			#endif
 		}
 		
 		static private void ShowHelp(OptionSet os)
 		{
-			Console.WriteLine("Help for ConfigTable.Check");
+			Console.WriteLine("ConfigTable.Check [options] FILES");
+			Console.WriteLine("");
 			os.WriteOptionDescriptions(Console.Error);
 			//Environment.Exit(-1);
 		}
