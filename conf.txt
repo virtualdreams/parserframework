@@ -1,4 +1,6 @@
-config = {
+ 
+ 
+ config = {
 	username="justiz\t.kindler",
 	password="123456",
 	float1 = +.09,
@@ -38,6 +40,20 @@ config = {
 		enabled = false
 	}
 	
-}
+};
+
+object = {
+	second = true
+};
+
+				
+
+_secondTempTable = { 
+	third = false
+};
+
+ddd = {x=3};
+
+
 
 

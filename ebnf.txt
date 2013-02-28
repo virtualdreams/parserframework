@@ -1,4 +1,4 @@
-^table			= S & key & S & '=' & S & object
+^table			= (S & key & S & '=' & S & object & S & ';')+
 ^object			= S & '{' & S & pair & (S & ',' & S & pair)* & S & '}'
 ^array			= S & '[' & S & (value & (S & ',' & S & value)*)* & S & ']'
 ^key 			= S & [a-zA-Z_] & [a-zA-Z0-9_]*

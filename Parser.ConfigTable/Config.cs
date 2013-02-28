@@ -17,7 +17,7 @@ namespace Parser.ConfigTable
 			Double,
 			Long,
 			Bool,
-			Unknown
+			Null
 		}
 		
 		private string _source = "";
@@ -33,13 +33,23 @@ namespace Parser.ConfigTable
 			_source = LoadFile(path);
 			ConfigTableParser ctp = new ConfigTableParser(_source);
 			
-			bool parsed = ctp.Parse();
-			
-			if(!parsed)
+			try
 			{
-				throw new Exception("Parsing config file failed. Please review your config.");
+				bool parsed = ctp.Parse();
+			
+				if(parsed)
+				{
+					_tree = ctp.Tree;
+				}
+				else
+				{
+					throw new Exception("Parsing config file failed. Pleas review your config.");
+				}
 			}
-			_tree = ctp.Tree;
+			catch(Exception ex)
+			{
+				throw ex;
+			}
 		}
 		
 		public object GetObject(string path)
@@ -74,23 +84,27 @@ namespace Parser.ConfigTable
 		
 		public ConfigTypes GetObjectType(string path)
 		{
-			Type type = GetObject(path).GetType();
-			if(type == typeof(string))
-				return ConfigTypes.String;
+			object obj = GetObject(path);
+			if(obj != null)
+			{
+				Type type = obj.GetType();
+				if(type == typeof(string))
+					return ConfigTypes.String;
+					
+				if(type == typeof(double))
+					return ConfigTypes.Double;
+					
+				if(type == typeof(long))
+					return ConfigTypes.Long;
+					
+				if(type.IsArray && type == typeof(string[]))
+					return ConfigTypes.Object;
 				
-			if(type == typeof(double))
-				return ConfigTypes.Double;
-				
-			if(type == typeof(long))
-				return ConfigTypes.Long;
-				
-			if(type.IsArray && type == typeof(string[]))
-				return ConfigTypes.Object;
+				if(type.IsArray && type == typeof(object[]))
+					return ConfigTypes.Array;
+			}
 			
-			if(type.IsArray && type == typeof(object[]))
-				return ConfigTypes.Array;
-			
-			return ConfigTypes.Unknown;
+			return ConfigTypes.Null;
 		}
 		
 		private object SearchTree(string path)

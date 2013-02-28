@@ -34,8 +34,8 @@ namespace Parser.ConfigTable
 					"config.server"
 				};
 				
-				Config.ConfigTypes t1 = cfg.GetObjectType("config/array");
-				Config.ConfigTypes t2 = cfg.GetObjectType("config/");
+				Config.ConfigTypes t1 = cfg.GetObjectType("config.array");
+				Config.ConfigTypes t2 = cfg.GetObjectType("object.");
 
 				object obj = null;
 				foreach (string key in keys)

@@ -32,8 +32,20 @@ namespace Parser.ConfigTable
 		public bool Parse()
 		{
 			return TreeNT((int)ConfigTable.Table, () =>
-				RuleTable()
+				//RuleTable()
+				Seq(() =>
+					Plus(() =>
+						RuleTable()
+					)
+					&& Test()
+				)
 			);
+		}
+		
+		public bool Test()
+		{
+			
+			return false;
 		}
 		
 		private bool RuleTable()
@@ -46,6 +58,8 @@ namespace Parser.ConfigTable
 					&& Char('=')
 					&& S()
 					&& RuleObject2()
+					&& S()
+					&& (Char(';') || Fatal("';' expected"))
 				)
 			);
 		}
