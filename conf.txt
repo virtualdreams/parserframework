@@ -40,19 +40,20 @@
 		enabled = false
 	}
 	
-};
+}
 
 object = {
 	second = true
-};
+}
 
-				
+	
+gfdgf	= {}
 
 _secondTempTable = { 
 	third = false
-};
+}
 
-ddd = {x=3};
+
 
 
 

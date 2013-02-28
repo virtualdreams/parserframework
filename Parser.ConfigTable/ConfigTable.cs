@@ -55,8 +55,8 @@ namespace Parser.ConfigTable
 					&& S()
 					&& RuleObject2()
 					&& S()
-					&& (Char(';') || Fatal("';' expected"))
-					&& S()
+					//&& (Char(';') || Fatal("';' expected"))
+					//&& S()
 				)
 			);
 		}

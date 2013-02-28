@@ -6,6 +6,7 @@ using System.Text;
 using Parser.Base;
 
 using System.IO;
+using System.Diagnostics;
 
 namespace Parser.ConfigTable
 {
@@ -13,6 +14,23 @@ namespace Parser.ConfigTable
 	{
 		static void Main(string[] args)
 		{
+			if (args.Length > 0)
+			{
+				Stopwatch ti= new Stopwatch();
+				ti.Start();
+				for(int i = 0; i < 100; ++i)
+				{
+					Config cfg = new Config();
+					cfg.Load(args[0]);
+				}
+				ti.Stop();
+				Console.WriteLine("Elapsed: " + ti.ElapsedMilliseconds);
+			}
+			Console.ReadKey();
+			return;
+			
+			
+			
 			if (args.Length > 0)
 			{
 				Config cfg = new Config();
