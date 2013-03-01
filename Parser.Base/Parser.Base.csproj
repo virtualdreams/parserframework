@@ -39,9 +39,12 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="PegBaseParser.cs" />
+    <Compile Include="PegException.cs" />
     <Compile Include="PegMatch.cs" />
     <Compile Include="PegCharParser.cs" />
     <Compile Include="PegNode.cs" />

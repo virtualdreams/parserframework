@@ -27,7 +27,7 @@ namespace Parser.Base
 				lpos += line.Length + 1;
 				lline++;
 				
-				if(lpos > pos)
+				if(lpos >= pos)
 				{
 					ln = lline;
 					col = lpos - pos;
@@ -47,7 +47,21 @@ namespace Parser.Base
 			
 			GetLineNumber(pos, out ln, out col);
 
-			throw new Exception(System.String.Format("{0},{1} - {2}", ln, col, message));
+			throw new PegException(System.String.Format("{0},{1} - {2}", ln, col, message));
+		}
+		
+		public bool Warning(string message)
+		{
+			int pos = _pos;
+
+			int ln = 0;
+			int col = 0;
+
+			GetLineNumber(pos, out ln, out col);
+			
+			//TODO - add output here
+			
+			return true;
 		}
 		
 		#region Rules
@@ -338,21 +352,10 @@ namespace Parser.Base
 			);
 		}
 		
-		//public bool S()
-		//{
-		//    return Seq(() =>
-		//        Char(' ') || Char('\t') || Char('\n') || Char('\r')
-		//    );
-		//}
-		
-		//public bool WS()
-		//{
-		//    return Option(() =>
-		//        Seq(() =>
-		//            Char(' ') || Char('\t')
-		//        )
-		//    );
-		//}
+		public bool TAB()
+		{
+			return Char('\t');
+		}
 		
 		public bool LF()
 		{

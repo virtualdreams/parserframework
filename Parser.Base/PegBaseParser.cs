@@ -81,6 +81,11 @@ namespace Parser.Base
 		
 		private void AddTreeNode(int id, PegTree.AddPolicy newAddPolicy, CreatorPhase phase)
 		{
+			if(_mute)
+			{
+				return;
+			}
+			
 			if(Tree.Root == null)
 			{
 				Tree.Root = Tree.Cur = CreateNode(phase, Tree.Cur, id);
