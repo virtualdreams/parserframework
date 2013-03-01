@@ -20,12 +20,15 @@ namespace Parser.Base
 		AnonymNode = -10004
 	}
 	
+	/// <summary>
+	/// This is the basic parser class
+	/// </summary>
 	public abstract class PegBaseParser
 	{
 		public delegate bool Matcher();
-		protected int _pos;
-		protected int _len;
-		protected bool _mute;
+		protected int _pos = 0;
+		protected int _len = 0;
+		protected bool _mute = false;
 		private PegTree _tree = new PegTree();
 		
 		public PegTree Tree
@@ -342,6 +345,27 @@ namespace Parser.Base
 				return true;
 			}
 			return false;
+		}
+		
+		[Obsolete("Untested rule. Use with care.")]
+		public bool Until(Matcher rule)
+		{
+			for(;;)
+			{
+				int pos = _pos;
+				if(_pos < _len)
+				{
+					if (rule())
+					{
+						_pos = pos;
+						return true;
+					}
+				}
+				else
+				{
+					return false;
+				}
+			}
 		}
 		
 		#endregion
