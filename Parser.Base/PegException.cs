@@ -6,10 +6,10 @@ using System.Text;
 namespace Parser.Base
 {
 	/// <summary>
-	/// This exception is thrown when an error in the SqlMapper occurs.
+	/// This exception is thrown when an error in the Parser occurs.
 	/// </summary>
 	/// <remarks>
-	/// This is the base exception for all exceptions thrown in the SqlMapper
+	/// This is the base exception for all exceptions thrown in the Parser
 	/// </remarks>
 	[Serializable]
 	public class PegException : ApplicationException
