@@ -5,12 +5,11 @@ using System.Text;
 
 namespace Parser.Base
 {
+	/// <summary>
+	/// This class hold the informations of a node in the tree
+	/// </summary>
 	public class PegNode
 	{
-		//public int _id;
-		//public PegNode _parent, _child, _next;
-		//public PegBegEnd _match;
-		
 		public int Id
 		{
 			get; set;
@@ -31,12 +30,12 @@ namespace Parser.Base
 			get; set;
 		}
 		
-		public PegBegEnd Match
+		public PegMatch Match
 		{
 			get; set;
 		}
 		
-		public PegNode(PegNode parent, int id, PegBegEnd match, PegNode child, PegNode next)
+		public PegNode(PegNode parent, int id, PegMatch match, PegNode child, PegNode next)
 		{
 			Parent = parent; 
 			Id = id;
@@ -45,18 +44,18 @@ namespace Parser.Base
 			Match = match;
 		}
 		
-		public PegNode(PegNode parent, int id, PegBegEnd match, PegNode child)
+		public PegNode(PegNode parent, int id, PegMatch match, PegNode child)
 			:this(parent, id, match, child, null)
 		{
 		}
 		
-		public PegNode(PegNode parent, int id, PegBegEnd match)
+		public PegNode(PegNode parent, int id, PegMatch match)
 			:this(parent, id, match, null, null)
 		{
 		}
 		
 		public PegNode(PegNode parent, int id)
-			:this(parent, id, new PegBegEnd(), null, null)
+			:this(parent, id, new PegMatch(), null, null)
 		{
 		}
 	}

@@ -5,7 +5,10 @@ using System.Text;
 
 namespace Parser.Base
 {
-	public class PegBegEnd
+	/// <summary>
+	/// This class hold the begin and end position of a successfull parsed node
+	/// </summary>
+	public class PegMatch
 	{
 		public int Beg
 		{

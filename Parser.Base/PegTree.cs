@@ -5,6 +5,9 @@ using System.Text;
 
 namespace Parser.Base
 {
+	/// <summary>
+	/// This class hold the information of the parse tree
+	/// </summary>
 	public class PegTree
 	{
 		public enum AddPolicy

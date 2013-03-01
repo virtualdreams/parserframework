@@ -42,7 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="PegBaseParser.cs" />
-    <Compile Include="PegBegEnd.cs" />
+    <Compile Include="PegMatch.cs" />
     <Compile Include="PegCharParser.cs" />
     <Compile Include="PegNode.cs" />
     <Compile Include="PegTree.cs" />

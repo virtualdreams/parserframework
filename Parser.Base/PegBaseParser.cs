@@ -12,11 +12,20 @@ namespace Parser.Base
 		CreateAndComplete
 	}
 	
+	public enum SpecialNodes
+	{
+		Fatal = -10001,
+		AnonymNTNode = -10002,
+		AnonymASTNode = -10003,
+		AnonymNode = -10004
+	}
+	
 	public abstract class PegBaseParser
 	{
 		public delegate bool Matcher();
 		protected int _pos;
 		protected int _len;
+		protected bool _mute;
 		private PegTree _tree = new PegTree();
 		
 		public PegTree Tree
@@ -27,48 +36,25 @@ namespace Parser.Base
 			}
 		}
 		
-		public bool Warning(string message)
-		{
-			return false;
-		}
-		
-		public bool TreeNT(int ruleId, Matcher toMatch)
-		{
-			PegNode prevCur = Tree.Cur;
-			PegTree.AddPolicy prevPolicy = Tree.Policy;
-			PegNode ruleNode = null;
-			
-			int posBeg = _pos;
-			
-			AddTreeNode(ruleId, PegTree.AddPolicy.AddAsChild, CreatorPhase.Create);
-			ruleNode = Tree.Cur;
-			
-			bool bMatches = toMatch();
-			
-			if(!bMatches)
-			{
-				RestoreTree(prevCur, prevPolicy);	
-			}
-			else
-			{
-				ruleNode.Match.Beg = posBeg;
-				ruleNode.Match.End = _pos;
-				Tree.Cur = ruleNode;
-				Tree.Policy = PegTree.AddPolicy.AddAsSibling;
-				CreateNode(CreatorPhase.CreationComplete, ruleNode, ruleId);
-			}
-			
-			return bMatches;
-		}
-		
 		private void RestoreTree(PegNode prevCur, PegTree.AddPolicy prevPolicy)
 		{
+			if(_mute)
+			{
+				return;
+			}
+			
 			if(prevCur == null)
+			{
 				Tree.Root = null;
+			}
 			else if(prevPolicy == PegTree.AddPolicy.AddAsChild)
+			{
 				prevCur.Child = null;
+			}
 			else
+			{
 				prevCur.Next = null;
+			}
 				
 			Tree.Cur = prevCur;
 			Tree.Policy = prevPolicy;
@@ -111,6 +97,88 @@ namespace Parser.Base
 		}
 			
 		#region Rules
+		public bool TreeNT(int ruleId, Matcher rule)
+		{
+			if (_mute)
+			{
+				return rule();
+			}
+
+			PegNode prevCur = Tree.Cur;
+			PegTree.AddPolicy prevPolicy = Tree.Policy;
+			PegNode ruleNode = null;
+
+			int posBeg = _pos;
+
+			AddTreeNode(ruleId, PegTree.AddPolicy.AddAsChild, CreatorPhase.Create);
+			ruleNode = Tree.Cur;
+
+			bool matches = rule();
+
+			if (!matches)
+			{
+				RestoreTree(prevCur, prevPolicy);
+			}
+			else
+			{
+				ruleNode.Match.Beg = posBeg;
+				ruleNode.Match.End = _pos;
+				Tree.Cur = ruleNode;
+				Tree.Policy = PegTree.AddPolicy.AddAsSibling;
+				CreateNode(CreatorPhase.CreationComplete, ruleNode, ruleId);
+			}
+
+			return matches;
+		}
+
+		public bool TreeNT(Matcher rule)
+		{
+			return TreeNT((int)SpecialNodes.AnonymNTNode, rule);
+		}
+
+		public bool TreeAST(int ruleId, Matcher rule)
+		{
+			if (_mute)
+			{
+				return rule();
+			}
+
+			bool matches = TreeNT(ruleId, rule);
+
+			if (matches)
+			{
+				if (Tree.Cur.Child != null && Tree.Cur.Child.Next == null && Tree.Cur.Parent != null)
+				{
+					if (Tree.Cur.Parent.Child == Tree.Cur)
+					{
+						Tree.Cur.Parent.Child = Tree.Cur.Child;
+						Tree.Cur.Child.Parent = Tree.Cur.Parent;
+						Tree.Cur = Tree.Cur.Child;
+					}
+					else
+					{
+						PegNode prev = null;
+						for (prev = Tree.Cur.Parent.Child; prev != null && prev.Next != Tree.Cur; prev = prev.Next)
+						{
+							//STUB
+						}
+						if (prev != null)
+						{
+							prev.Next = Tree.Cur.Child;
+							Tree.Cur.Child.Parent = Tree.Cur.Parent;
+							Tree.Cur = Tree.Cur.Child;
+						}
+					}
+				}
+			}
+			return matches;
+		}
+
+		public bool TreeAST(Matcher rule)
+		{
+			return TreeAST((int)SpecialNodes.AnonymASTNode, rule);
+		}
+		
 		/// <summary>
 		/// Match a sequence of rules, i.e. && or || or ()
 		/// </summary>
@@ -132,26 +200,40 @@ namespace Parser.Base
 		}
 		
 		/// <summary>
-		/// Match a rule and reset cursor
+		/// &e
 		/// </summary>
 		public bool Peek(Matcher rule)
 		{
 			int pos = _pos;
+			bool mute = _mute;
+			_mute = true;
+			
 			bool bMatches = rule();
+			
+			_mute = mute;
 			_pos = pos;
+			
 			return bMatches;
 		}
 		
+		/// <summary>
+		/// !e
+		/// </summary>
 		public bool Not(Matcher rule)
 		{
 			int pos = _pos;
+			bool mute = _mute;
+			_mute = true;
+			
 			bool bMatches = rule();
+			
+			_mute = mute;
 			_pos = pos;
 			return !bMatches;
 		}
 		
 		/// <summary>
-		/// Match a rule minimum one or more
+		/// e+
 		/// </summary>
 		public bool Plus(Matcher rule)
 		{
@@ -169,7 +251,7 @@ namespace Parser.Base
 		}
 		
 		/// <summary>
-		/// Match a rule until it doesn't match
+		/// e*
 		/// </summary>
 		public bool Star(Matcher rule)
 		{
@@ -183,8 +265,11 @@ namespace Parser.Base
 				}
 			}
 		}
-
-		public bool Option(Matcher rule)
+		
+		/// <summary>
+		/// e?
+		/// </summary>
+		public bool Opt(Matcher rule)
 		{
 			int pos = _pos;
 			if (!rule())
@@ -195,7 +280,7 @@ namespace Parser.Base
 		}
 			
 		/// <summary>
-		/// match a rule n times
+		/// e{x}
 		/// </summary>
 		public bool For(int count, Matcher rule)
 		{
@@ -216,6 +301,9 @@ namespace Parser.Base
 			return true;
 		}
 		
+		/// <summary>
+		/// e{min,max}
+		/// </summary>
 		public bool For(int min, int max, Matcher rule)
 		{
 			PegNode prevCur = Tree.Cur;
@@ -238,7 +326,7 @@ namespace Parser.Base
 		}
 		
 		/// <summary>
-		/// Match any. Moves the cursor one forward
+		/// .*
 		/// </summary>
 		/// <returns></returns>
 		public bool Any()
