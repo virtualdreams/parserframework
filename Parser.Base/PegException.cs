@@ -7,10 +7,10 @@ using System.Runtime.Serialization;
 namespace Parser.Base
 {
 	/// <summary>
-	/// This exception is thrown when an error in the Parser occurs.
+	/// This exception is thrown when an error in the parser occurs.
 	/// </summary>
 	/// <remarks>
-	/// This is the base exception for all exceptions thrown in the Parser
+	/// This is the base exception for all exceptions thrown in the parser
 	/// </remarks>
 	[Serializable]
 	public class PegException : ApplicationException
@@ -19,7 +19,7 @@ namespace Parser.Base
 		/// Initializes a new instance of the PegException class.
 		/// </summary>
 		public PegException()
-			: base("SqlDataMapper caused an exception.")
+			: base("Parser caused an exception.")
 		{
 		}
 
@@ -27,7 +27,7 @@ namespace Parser.Base
 		/// Initializes a new instance og the PegException class.
 		/// </summary>
 		public PegException(Exception ex)
-			: base("SqlDataMapper caused an exception.", ex)
+			: base("Parser caused an exception.", ex)
 		{
 		}
 
