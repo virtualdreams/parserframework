@@ -43,7 +43,7 @@ namespace Parser.ConfigTable
 				}
 				else
 				{
-					throw new Exception("Parsing config file failed. Pleas review your config.");
+					throw new Exception("Parsing config file failed. Please check the configuration file.");
 				}
 			}
 			catch(Exception ex)
@@ -120,8 +120,9 @@ namespace Parser.ConfigTable
 			{
 				node = FindKey(node, seg[i]); //returns Flat, Object, Array or null
 				
-				if(i < seg.Count() - 1) //if there are more segments available search for more objects or break
+				if(i < seg.Count() - 1) //if there are more segments available, search for more objects or break
 				{
+					//this element can be only an object, otherwise search must break here
 					if(node != null && (ConfigTableEnum)node.Id == ConfigTableEnum.Object)
 					{
 						node = node.Child;
@@ -266,7 +267,8 @@ namespace Parser.ConfigTable
 				return sr.ReadToEnd();
 			}
 		}
-
+		
+		#region Debug
 		public void Print()
 		{
 			PegTree tree = _tree;
@@ -295,5 +297,6 @@ namespace Parser.ConfigTable
 			if (node.Next != null)
 				PrintNode(node.Next, level, source);
 		}
+		#endregion
 	}
 }
