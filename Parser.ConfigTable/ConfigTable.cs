@@ -144,7 +144,7 @@ namespace Parser.ConfigTable
 					&& Char('=')
 					&& S()
 					&& Star(() =>
-						RuleObject2() || RuleArray2() || RuleFlat()// || Fatal("object, array or value expected")
+						RuleObject2() || RuleArray2() || RuleFlat()
 					)
 				)
 			);
