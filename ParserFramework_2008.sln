@@ -1,9 +1,9 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parser.Base", "Parser.Base\Parser.Base.csproj", "{3746D2EA-2919-44F3-9632-EE2F8B2C0B96}"
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parser.Base_2008", "Parser.Base\Parser.Base_2008.csproj", "{3746D2EA-2919-44F3-9632-EE2F8B2C0B96}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parser.ConfigTable", "Parser.ConfigTable\Parser.ConfigTable.csproj", "{AA468A8D-0F0F-4A59-943F-0117AAEB53E7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parser.ConfigTable_2008", "Parser.ConfigTable\Parser.ConfigTable_2008.csproj", "{AA468A8D-0F0F-4A59-943F-0117AAEB53E7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
