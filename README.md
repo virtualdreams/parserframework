@@ -1,4 +1,4 @@
-Parserframework (PEG-Parser)
-============================
+Parsing expression grammar (PEG)
+================================
 
-Simple framework for building parser from peg.
+Simple framework to build a parser from peg.
